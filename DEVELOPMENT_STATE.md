@@ -6,8 +6,8 @@
 
 | 项 | 值 |
 |---|---|
-| 当前版本 | v1.1.0（前台只读导航） |
-| 数据库版本 | 3（+ public_navigation：apps.public_visible 与前台设置） |
+| 当前版本 | v1.2.0（双类型应用模型） |
+| 数据库版本 | 4（+ app_scope_and_endpoints：apps.scope 与 app_endpoints 表） |
 | API 版本 | v1（/api/v1/） |
 | 前端构建 | web/dist 经 go:embed 嵌入二进制 |
 | 日期 | 2026-09-29 |
@@ -83,7 +83,19 @@ examples/apps.yaml            示例应用配置
 - 权限隔离验证：匿名访问所有管理 API（start/stop/restart/delete/update/settings/backup/audit）→ 401。
 - 集成测试扩展至 49 项断言，全部通过；已部署 192.168.1.72 并线上验证。
 
-## 未完成 / 待办（v1.2 候选）
+## v1.2 双类型应用模型（2026-09-29 交付）
+
+- `apps.scope`（JSON `type`）：LOCAL / EXTERNAL；迁移 v4 现有应用自动归为 LOCAL，数据零丢失。
+- `app_endpoints` 表 + CRUD API（/api/v1/apps/{id}/endpoints）；前台 Public DTO 以 endpoints 统一输出访问入口。
+- EXTERNAL：validateApp 忽略全部管理字段（须有访问地址，检测仅 http/tcp/none，目标默认访问地址）；
+  Service.Start/Stop/Restart/TestCommand 后端拒绝（"非本地应用不支持服务控制"）；AutoStart 跳过；
+  StatusManager 状态仅 ONLINE/OFFLINE/UNKNOWN（检测目标默认访问地址，OFFLINE 文案为"远程服务当前无法访问"）。
+- 后台：添加/编辑按类型动态表单（EXTERNAL 无运行控制页签）；列表/概览增加类型列与筛选。
+- 前台：卡片带"本地应用/非本地"类型标签，类型筛选 chips（全部/本地/非本地 + 计数），搜索支持"本地/非本地"。
+- 品牌统一：Armbian AppHub → AppHub（代码/脚本/配置/页面/README/PROJECT_SPEC），README 增加如实平台说明。
+- 集成测试 57/0；已部署 192.168.1.72；已推送 GitHub（tanglx02/apphub）。
+
+## 未完成 / 待办（v1.3 候选）
 
 - [ ] 在线检查新版本（当前仅显示版本号，按规格 v1 不做自动更新）
 - [ ] operator / viewer 角色的 UI 权限区分（数据模型已预留 role 字段）
