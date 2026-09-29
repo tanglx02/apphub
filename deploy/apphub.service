@@ -1,0 +1,45 @@
+[Unit]
+Description=Armbian AppHub - 本地应用导航与服务控制中心
+Documentation=https://github.com/tanglx02/apphub
+After=network-online.target
+Wants=network-online.target
+
+# SD 卡 / 独立数据盘场景：确保项目目录所在文件系统挂载完成后再启动，
+# 避免 systemd 在目录尚未挂载时以错误的工作目录启动。
+RequiresMountsFor=/opt/apphub
+
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=apphub
+Group=apphub
+WorkingDirectory=/opt/apphub
+ExecStart=/opt/apphub/apphub --config /opt/apphub/config.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillSignal=SIGTERM
+KillMode=mixed
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=apphub
+
+# ---------------- 资源限制 ----------------
+# 目标：ARM64 4GB 设备上 AppHub 自身内存占用远低于上限。
+# 如被管理应用较多，可适当上调 MemoryMax / CPUQuota。
+MemoryMax=512M
+CPUQuota=50%
+TasksMax=256
+
+# ---------------- 安全加固 ----------------
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+ReadWritePaths=/opt/apphub
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+# AppHub 最小 sudo 权限
+# 安装位置：/etc/sudoers.d/apphub   权限：0440
+#
+# 设计原则：
+#   仅授予 systemctl 对服务的启停与状态查询能力，
+#   禁止使用 apphub ALL=(ALL) NOPASSWD: ALL 这类全权配置。
+#
+# 校验命令：visudo -cf /etc/sudoers.d/apphub
+
+apphub ALL=(root) NOPASSWD: /bin/systemctl start apphub.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl stop apphub.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl restart apphub.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl status apphub.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl enable apphub.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl disable apphub.service
+
+# 被管理应用：仅允许对 .service 单元执行启停与状态查询
+apphub ALL=(root) NOPASSWD: /bin/systemctl start *.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl stop *.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl restart *.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl is-active *.service
+apphub ALL=(root) NOPASSWD: /bin/systemctl is-active *
+apphub ALL=(root) NOPASSWD: /bin/systemctl show *
+apphub ALL=(root) NOPASSWD: /usr/bin/journalctl -u *

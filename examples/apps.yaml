@@ -1,0 +1,111 @@
+# =============================================================
+# AppHub 示例应用配置
+# 用途：参考模板 + 开发/演示环境快速导入
+#
+# 导入方式（后台 → 应用管理 → 导入，或复制粘贴到导入框）：
+#   1. 后台「应用管理 → 导入」支持 JSON 文件（导出即为该格式）
+#   2. 本 YAML 可作为配置模板参考，字段与 JSON 完全对应
+#
+# 注意：安装生产版默认不会导入任何示例应用，需管理员手动添加。
+# =============================================================
+
+apps:
+  # ---------- 1. systemd 应用示例 ----------
+  - name: CyberStrikeAI
+    slug: cyberstrike-ai
+    description: AI 安全靶场训练平台
+    icon: 🤖
+    category_id: 1 # AI
+    tags: AI,安全,靶场
+    internal_url: http://192.168.1.72:8080
+    external_url: https://ai.example.com
+    app_type: systemd
+    systemd_unit: cyberstrike-ai.service
+    status_type: systemd
+    status_target: cyberstrike-ai.service
+    enabled: true
+    auto_start: false # 默认关闭开机自启
+    favorite: true
+    timeout_seconds: 60
+    check_timeout_sec: 5
+
+  # ---------- 2. Command 应用示例（脚本启停） ----------
+  - name: Vaultwarden
+    slug: vaultwarden
+    description: 私有密码管理服务
+    icon: 🔐
+    category_id: 6 # 密码管理
+    tags: 密码,私有化
+    internal_url: http://192.168.1.72:8222
+    external_url: https://vault.example.com
+    app_type: command
+    shell_mode: false # 默认使用 executable + args，不启用 shell
+    start_command: /opt/apps/vaultwarden/start.sh
+    stop_command: /opt/apps/vaultwarden/stop.sh
+    restart_command: ""
+    start_args: '[]'
+    work_dir: /opt/apps/vaultwarden
+    environment: |
+      ROCKET_PORT=8222
+      LOG_LEVEL=info
+    status_type: tcp
+    status_target: 127.0.0.1:8222
+    enabled: true
+    auto_start: false
+    timeout_seconds: 30
+    check_timeout_sec: 5
+
+  # ---------- 3. HTTP 检测示例 ----------
+  - name: 1Panel
+    slug: 1panel
+    description: 服务器运维管理面板
+    icon: 🖥️
+    category_id: 4 # 运维
+    tags: 运维,面板
+    internal_url: http://192.168.1.72:9999
+    external_url: ""
+    app_type: systemd
+    systemd_unit: 1panel.service
+    status_type: http
+    status_target: http://127.0.0.1:9999
+    expected_codes: '[200]'
+    enabled: true
+    auto_start: false
+
+  # ---------- 4. Yakit ----------
+  - name: Yakit
+    slug: yakit
+    description: 网络安全集成平台
+    icon: 🛡️
+    category_id: 2 # 安全
+    tags: 安全,渗透
+    internal_url: http://192.168.1.72:8087
+    external_url: ""
+    app_type: command
+    start_command: /opt/apps/yakit/start.sh
+    stop_command: /opt/apps/yakit/stop.sh
+    work_dir: /opt/apps/yakit
+    status_type: http
+    status_target: http://127.0.0.1:8087
+    enabled: true
+    auto_start: false
+
+  # ---------- 5. 测试 Web（配合 tests/mock-app） ----------
+  - name: 测试 Web
+    slug: test-web
+    description: AppHub 自带的模拟 HTTP 服务，用于验证启停与检测
+    icon: 🧪
+    category_id: 12 # 其他
+    tags: 测试
+    internal_url: http://127.0.0.1:19090
+    external_url: ""
+    app_type: command
+    shell_mode: true # 需要 shell 才能使用重定向与后台运行
+    start_command: /opt/apphub/tests/mock-app/start.sh
+    stop_command: /opt/apphub/tests/mock-app/stop.sh
+    work_dir: /opt/apphub/tests/mock-app
+    status_type: http
+    status_target: http://127.0.0.1:19090/health
+    enabled: true
+    auto_start: false
+    timeout_seconds: 15

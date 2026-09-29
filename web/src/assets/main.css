@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design Token
+   全站颜色唯一来源。切换主题只改 :root / .dark 下的变量。
+   禁止在组件里硬编码颜色。
+   ============================================================ */
+
+:root {
+  --c-canvas: 244 246 250;
+  --c-surface: 255 255 255;
+  --c-elevated: 248 250 252;
+  --c-line: 226 232 240;
+  --c-ink: 15 23 42;
+  --c-muted: 100 116 139;
+  --c-faint: 148 163 184;
+  --c-accent: 37 99 235;
+  --c-accent-soft: 219 234 254;
+  --c-accent-ink: 30 64 175;
+  --c-ok: 22 163 74;
+  --c-warn: 217 119 6;
+  --c-danger: 220 38 38;
+  --c-info: 37 99 235;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.05);
+}
+
+.dark {
+  --c-canvas: 11 17 32; /* #0B1120 深蓝灰科技风，避免纯黑 */
+  --c-surface: 17 24 39; /* #111827 */
+  --c-elevated: 22 31 50;
+  --c-line: 33 45 66;
+  --c-ink: 226 232 240;
+  --c-muted: 148 163 184;
+  --c-faint: 100 116 139;
+  --c-accent: 59 130 246;
+  --c-accent-soft: 30 58 95;
+  --c-accent-ink: 147 197 253;
+  --c-ok: 52 211 153;
+  --c-warn: 251 191 36;
+  --c-danger: 248 113 113;
+  --c-info: 96 165 250;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 1px 3px rgb(0 0 0 / 0.2);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  @apply bg-canvas text-ink font-sans antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04';
+  overscroll-behavior-y: none;
+}
+
+/* 滚动条：克制、贴合主题 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line));
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-faint) / 0.6);
+  background-clip: content-box;
+}
+
+@layer components {
+  .card {
+    @apply bg-surface border border-line rounded-2xl;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 ease-smooth;
+  }
+  .card-hover:hover {
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.1), 0 2px 4px rgb(0 0 0 / 0.05);
+    @apply border-line/80 -translate-y-[1px];
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl text-sm font-medium
+           transition-all duration-150 ease-smooth select-none
+           disabled:opacity-45 disabled:cursor-not-allowed;
+  }
+  .btn-sm {
+    @apply h-8 px-3;
+  }
+  .btn-md {
+    @apply h-9 px-3.5;
+  }
+  .btn-lg {
+    @apply h-11 px-4 text-[15px];
+  }
+  .btn-primary {
+    @apply bg-accent text-white hover:brightness-110 active:brightness-95;
+  }
+  .btn-ghost {
+    @apply text-muted hover:text-ink hover:bg-elevated;
+  }
+  .btn-outline {
+    @apply border border-line text-ink hover:bg-elevated;
+  }
+  .btn-danger {
+    @apply bg-danger text-white hover:brightness-110;
+  }
+
+  .input {
+    @apply w-full h-10 px-3 rounded-xl bg-elevated border border-line text-ink text-sm
+           placeholder:text-faint outline-none transition-all duration-150
+           focus:border-accent focus:ring-2 focus:ring-accent/20;
+  }
+  .textarea {
+    @apply w-full px-3 py-2 rounded-xl bg-elevated border border-line text-ink text-sm
+           placeholder:text-faint outline-none transition-all duration-150 resize-y
+           focus:border-accent focus:ring-2 focus:ring-accent/20 font-mono;
+  }
+  .label {
+    @apply block text-[13px] font-medium text-muted mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[12px]
+           bg-elevated text-muted border border-line;
+  }
+  .skeleton {
+    @apply bg-elevated rounded-lg relative overflow-hidden;
+    background-image: linear-gradient(90deg, transparent, rgb(var(--c-line) / 0.6), transparent);
+    background-size: 500px 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 1.4s linear infinite;
+  }
+  .divider {
+    @apply h-px bg-line;
+  }
+  .section-title {
+    @apply text-[13px] font-semibold uppercase tracking-wider text-faint;
+  }
+}
+
+/* 移动端安全区 */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 状态灯 */
+.status-dot {
+  @apply relative inline-flex rounded-full;
+  width: 8px;
+  height: 8px;
+}
+.status-dot::after {
+  content: '';
+  @apply absolute inset-0 rounded-full opacity-40;
+  background: currentColor;
+  animation: pulse-dot 2s ease-in-out infinite;
+}

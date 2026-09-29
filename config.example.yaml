@@ -1,0 +1,59 @@
+# AppHub 配置示例
+# 所有相对路径均相对于本文件所在目录（项目根目录）
+# 目标：整个项目目录复制到另一台设备即可完成迁移
+
+server:
+  host: 0.0.0.0 # 监听地址
+  port: 18080 # 监听端口
+  https: false # 是否启用 HTTPS
+  redirect_http: false # HTTPS 时是否把 HTTP 重定向到 HTTPS
+  http_port: 18081 # 重定向监听端口
+  trusted_proxies: "" # 可信反向代理 CIDR，逗号分隔（用于正确识别客户端 IP）
+  site_name: AppHub # 系统名称
+  logo: "" # Logo 地址，留空使用默认
+  timezone: Asia/Shanghai
+  read_timeout_sec: 30
+  write_timeout_sec: 60
+
+database:
+  path: ./data/apphub.db
+  busy_timeout_ms: 5000
+
+logging:
+  level: info # debug | info | warn | error
+  retention_days: 30 # 日志保留天数（SD 卡友好）
+  max_size_mb: 20 # 单文件最大，超出自动轮转
+  console: true # systemd 场景建议保持 true
+
+security:
+  session_timeout: 86400 # 会话有效期（秒）
+  login_max_fails: 5 # 登录失败锁定阈值
+  login_lock_minutes: 15
+  rate_limit_per_min: 120
+  csrf_enabled: true
+  cookie_secure: auto # auto | true | false
+
+status:
+  interval: 5 # 后台状态检测周期（秒）
+  timeout: 5 # 单次检测超时（秒）
+  concurrency: 4 # 检测并发数
+  start_timeout: 60 # 启动命令超时（秒）
+  stop_timeout: 30 # 停止命令超时（秒）
+  restart_timeout: 90
+
+tls:
+  enabled: false
+  self_signed: false
+  cert_file: ./data/certs/server.crt
+  key_file: ./data/certs/server.key
+  auto_generate: true # 证书不存在时自动生成自签名证书
+
+backup:
+  directory: ./backups
+  retention_days: 30
+  auto_enabled: false
+
+executor:
+  max_output_bytes: 1048576 # 命令输出上限，防止无限输出占用内存
+  kill_process_tree: true # 停止时清理子进程组
+  grace_period_sec: 10 # SIGTERM 后的等待时间，超时才 SIGKILL
